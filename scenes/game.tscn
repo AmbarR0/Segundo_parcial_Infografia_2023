@@ -1,0 +1,95 @@
+[gd_scene load_steps=7 format=3 uid="uid://cruh8bbcfvyvr"]
+
+[ext_resource type="Texture2D" uid="uid://brp4euwugc18f" path="res://assets/background.png" id="1_blg2x"]
+[ext_resource type="PackedScene" uid="uid://bt33j5dwxano3" path="res://scenes/top_ui.tscn" id="2_wrbvl"]
+[ext_resource type="Texture2D" uid="uid://cdunkljd6up72" path="res://assets/bottom_ui.png" id="3_jy0d4"]
+[ext_resource type="Script" path="res://scripts/grid.gd" id="4_4jr62"]
+[ext_resource type="Script" path="res://scenes/message.gd" id="4_11f0u"]
+[ext_resource type="FontFile" uid="uid://b25431rxog83j" path="res://assets/fonts/Kenney Blocks.ttf" id="4_qadup"]
+
+[node name="Game" type="Node2D"]
+
+[node name="background" type="TextureRect" parent="."]
+offset_right = 576.0
+offset_bottom = 1024.0
+texture = ExtResource("1_blg2x")
+
+[node name="top_ui" parent="." instance=ExtResource("2_wrbvl")]
+
+[node name="bottom_ui" type="TextureRect" parent="."]
+offset_top = 928.0
+offset_right = 576.0
+offset_bottom = 1020.0
+texture = ExtResource("3_jy0d4")
+
+[node name="MarginContainer" type="MarginContainer" parent="bottom_ui"]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -28.0
+offset_bottom = 28.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_right = 15
+
+[node name="message" type="HBoxContainer" parent="bottom_ui/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+theme_override_constants/separation = 40
+script = ExtResource("4_11f0u")
+
+[node name="Label" type="Label" parent="bottom_ui/MarginContainer/message"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("4_qadup")
+text = "Has perdido el juego y tu honor"
+
+[node name="Button" type="Button" parent="bottom_ui/MarginContainer/message"]
+modulate = Color(0.484375, 0.84375, 0.917969, 1)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.484375, 0.84375, 0.917969, 1)
+theme_override_fonts/font = ExtResource("4_qadup")
+text = "Reiniciar 
+Juego"
+
+[node name="grid" type="Node2D" parent="."]
+script = ExtResource("4_4jr62")
+width = 8
+height = 10
+x_start = 64
+y_start = 800
+offset = 64
+y_offset = 2
+isMoves = true
+
+[node name="Timer" type="Timer" parent="grid"]
+
+[node name="destroy_timer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+
+[node name="collapse_timer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+
+[node name="refill_timer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+
+[connection signal="Iwin" from="top_ui" to="grid" method="_on_top_ui_iwin"]
+[connection signal="finishGame" from="top_ui" to="bottom_ui/MarginContainer/message" method="_on_top_ui_finish_game"]
+[connection signal="stopTimer" from="top_ui" to="grid" method="_on_top_ui_stop_timer"]
+[connection signal="button_down" from="bottom_ui/MarginContainer/message/Button" to="top_ui" method="_on_button_button_down"]
+[connection signal="button_down" from="bottom_ui/MarginContainer/message/Button" to="bottom_ui/MarginContainer/message" method="_on_button_button_down"]
+[connection signal="button_down" from="bottom_ui/MarginContainer/message/Button" to="grid" method="_on_button_button_down"]
+[connection signal="moving" from="grid" to="top_ui" method="_on_grid_moving"]
+[connection signal="scoreU" from="grid" to="top_ui" method="_on_grid_score_u"]
+[connection signal="timerU" from="grid" to="top_ui" method="_on_grid_timer_u"]
+[connection signal="timeout" from="grid/Timer" to="grid" method="_on_timer_timeout"]
+[connection signal="timeout" from="destroy_timer" to="grid" method="_on_destroy_timer_timeout"]
+[connection signal="timeout" from="collapse_timer" to="grid" method="_on_collapse_timer_timeout"]
+[connection signal="timeout" from="refill_timer" to="grid" method="_on_refill_timer_timeout"]
